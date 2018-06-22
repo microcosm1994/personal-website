@@ -1,0 +1,115 @@
+html,body{
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  position: relative;
+}
+.Start {
+  text-align: center;
+}
+
+.Start-logo {
+  animation: Start-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.Start-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.Start-title {
+  font-size: 1.5em;
+}
+
+.Start-intro {
+  font-size: large;
+}
+.cmd-box{
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.cmd{
+  width: 102%;
+  height: 400px;
+  background: #333;
+  color:#f5f5f5;
+  text-align: left;
+  border:0;
+  font-size: 16px;
+  outline: none;
+  padding-bottom: 100px;
+  box-sizing: border-box;
+  padding-top: 10px;
+}
+.btn{
+  width: 220px;
+  height: 30px;
+  background: #666;
+  margin: 20px auto;
+  transform: translateX(195px);
+  overflow: hidden;
+  border-radius: 5px;
+}
+.btn:hover{
+  background: #444;
+}
+.btn:active{
+  background: #666;
+}
+.btn a{
+  color:#f5f5f5;
+  text-decoration: none;
+  line-height: 30px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.footer{
+  width: 100%;
+  height: 70px;
+  position: absolute;
+  bottom:0;
+  left: 0;
+  background: #222222;
+  text-align: center;
+}
+.concat{
+  width: 600px;
+  height: 70px;
+  margin: 50px auto;
+}
+.concat .github-logo{
+  width: 50px;
+  height: 50px;
+  background: url(../img/GitHub.png) no-repeat;
+  background-size: 100% 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+.concat .github-logo:hover{
+  background: url(../img/GitHub1.png) no-repeat;
+  background-size: 100% 100%;
+}
+.concat .csdn-logo{
+  width: 50px;
+  height: 50px;
+  background: url(../img/csdn.png) no-repeat;
+  background-size: 100% 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 100px;
+}
+.concat .csdn-logo:hover{
+  background: url(../img/csdn1.png) no-repeat;
+  background-size: 100% 100%;
+}
+@keyframes Start-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
