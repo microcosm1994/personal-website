@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom'
-import logo from '../img/logo.svg'
 import '../css/Start.css';
 
 class Start extends Component {
@@ -286,25 +285,26 @@ class Start extends Component {
     render() {
         return (
             <div className="Start">
-                <header className="Start-header">
-                    <img src={logo} className="Start-logo" alt="logo"/>
-                    <h1 className="Start-title">Welcome to My personal website</h1>
-                </header>
-                <p className="Start-intro">
-                    Click the bottom <code>Access to the home page</code> to get to the front page of the site</p>
-                <div className="cmd-box">
-                    <textarea type='input' className='cmd' ref='mycmd' autoFocus='autoFocus' readOnly='readOnly' value={this.state.cmd}></textarea>
+               <div className='Start-container'>
+                   <header className="Start-header">
+                       <p className="Start-intro">
+                           点击下方 <code>进入主页</code> 进入个人网站</p>
+                   </header>
+                   <div className="cmd-box">
+                       <textarea type='input' className='cmd' ref='mycmd' autoFocus='autoFocus' readOnly='readOnly' value={this.state.cmd}></textarea>
+                   </div>
+                   <div className='btn' onClick={this.clearIn}>
+                       <Link to="/home">
+                           进入主页
+                       </Link>
+                   </div>
+               </div>
+                <div className="footer">
+                    <div className='concat'>
+                        <a href="https://github.com/microcosm1994" target="_blank" className='concat-logo'>github</a>
+                        <a href="https://blog.csdn.net/qq_39081974?ref=toolbar" target="_blank" className='concat-logo'>csdn</a>
+                    </div>
                 </div>
-                <div className='btn' onClick={this.clearIn}>
-                    <Link to="/home">
-                        Access to the home page
-                    </Link>
-                </div>
-                <div className='concat'>
-                    <a href="https://github.com/microcosm1994" target-blank="true" className='github-logo'></a>
-                    <a href="https://blog.csdn.net/qq_39081974?ref=toolbar" target-blank="true" className='csdn-logo'></a>
-                </div>
-                <div className="footer"></div>
             </div>
         );
     }

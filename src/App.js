@@ -1,23 +1,20 @@
 import React, {Component} from 'react';
 import {
     BrowserRouter as Router,
-    Route
+    Route,
+    Switch
 } from 'react-router-dom'
-import './css/App.css'
 import Start from './component/Start'
 import Home from './component/Home'
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
     render() {
         return (
             <Router>
-                <div>
+                <Switch>
                     <Route path='/' exact component={Start}></Route>
-                    <Route path='/home' component={Home}></Route>
-                </div>
+                    <Route path='/home' exact component={Home}></Route>
+                </Switch>
             </Router>
         );
     }
