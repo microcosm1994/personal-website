@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-
 import {
-    BrowserRouter as Router,
+    Router,
     Route,
     Link,
     Switch
 } from 'react-router-dom'
-import { Input, Avatar, Menu, Dropdown, Icon } from 'antd'
+import {createBrowserHistory} from 'history'
+import {Input, Avatar, Menu, Dropdown, Icon} from 'antd'
 import Resume from './Resume'
 import Blog from './Blog'
 import Work from './Work'
@@ -16,7 +16,11 @@ import 'antd/lib/avatar/style/css'
 import 'antd/lib/menu/style/css'
 import 'antd/lib/dropdown/style/css'
 import 'antd/lib/icon/style/css'
+import Logo from '../img/logo.png'
+
+// 搜索输入框组件
 const Search = Input.Search
+// 下拉菜单列表组件
 const menu = (
     <Menu>
         <Menu.Item key="0">
@@ -24,46 +28,75 @@ const menu = (
         </Menu.Item>
     </Menu>
 )
+// 创建history对象
+const history = createBrowserHistory()
+// 监听history对象
+history.listen((location, action) => {
+    console.log(location.pathname);
+    console.log(location.search);
+    console.log(location.state);
+})
 
 class Home extends Component {
+    componentDidMount() {
+        
+    }
+
+    componentWillUnmount() {
+        console.log(1);
+    }
+
+    componentDidUpdate() {
+        console.log(2);
+    }
+
     render() {
         return (
-            <BrowserRouter>
+            <Router history={history}>
                 <div className="Home">
                     <div className="Home-header">
                         <div className="Home-header-box">
-                            <Search
-                                placeholder="请输入要搜索的内容"
-                                onSearch={value => console.log(value)}
-                                style={{ width: 200 }}
-                            />
+                            <div className="Home-logo">
+                                <img src={Logo} alt=""/>
+                            </div>
+                            <div className="Home-search">
+                                <Search
+                                    placeholder="请输入要搜索的内容"
+                                    onSearch={value => console.log(value)}/>
+                            </div>
                             <div className="Home-menu">
                                 <ul>
                                     <li>
-                                        <Link to="/home/blog" activeStyle={{ color: 'red' }}>Blog</Link>
+                                        <Link to="/home/blog">Blog</Link>
                                     </li>
-                                    <li><Link to="/home/work" activeStyle={{ color: 'red' }}>Works</Link></li>
-                                    <li><Link to="/home/tool" activeStyle={{ color: 'red' }}>Tool</Link></li>
-                                    <li><Link to="/home/disk" activeStyle={{ color: 'red' }}>Blog</Link></li>
+                                    <li><Link to="/home/work">Works</Link></li>
+                                    <li><Link to="/home/tool">Tool</Link></li>
+                                    <li><Link to="/home/disk">Blog</Link></li>
                                 </ul>
                             </div>
-                            <Avatar shape="square" size="large" icon="user" />
                             <Dropdown overlay={menu} trigger={['click']}>
-                                <a className="ant-dropdown-link" href="#">
-                                    dubo<Icon type="down" />
+                                <a className="ant-dropdown-link Home-dropdown" href="#">
+                                    dubo<Icon type="down"/>
                                 </a>
                             </Dropdown>
+                            <Avatar shape="square" size="large" icon="user"/>
                         </div>
                     </div>
                     <div className='Home-container'>
-                       <Switch>
-                           <Route path='/home/blog' component={Blog}></Route>
-                           <Route path='/home/work' component={Work}></Route>
-                           <Route path='/home/resume' component={Resume}></Route>
-                       </Switch>
+                        <Switch>
+                            <Route path='/home/blog' component={Blog}></Route>
+                            <Route path='/home/work' component={Work}></Route>
+                            <Route path='/home/resume' component={Resume}></Route>
+                        </Switch>
+                    </div>
+                    <div className="footer">
+                        <div className='concat'>
+                            <a href="https://github.com/microcosm1994" target="_blank" className='concat-logo'>github</a>
+                            <a href="https://blog.csdn.net/qq_39081974?ref=toolbar" target="_blank" className='concat-logo'>csdn</a>
+                        </div>
                     </div>
                 </div>
-            </BrowserRouter>
+            </Router>
         )
     }
 }
