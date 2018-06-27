@@ -39,6 +39,7 @@
 .Home .Home-header .Home-header-box .Home-menu {
   height: 100%;
   float: left;
+  margin-left: 10px;
 }
 .Home .Home-header .Home-header-box .Home-menu ul {
   height: 100%;
