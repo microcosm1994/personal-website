@@ -67,7 +67,7 @@ class Home extends Component {
                             <div className="Home-menu">
                                 <ul>
                                     <li>
-                                        <Link to="/home/blog">Blog</Link>
+                                        <Link to="/home">Blog</Link>
                                     </li>
                                     <li><Link to="/home/work">Works</Link></li>
                                     <li><Link to="/home/tool">Tool</Link></li>
@@ -83,11 +83,10 @@ class Home extends Component {
                         </div>
                     </div>
                     <div className='Home-container'>
-                        <Switch>
-                            <Route path='/home/blog' component={Blog}></Route>
+                            <Route path='/' exact component={Blog}></Route>
+                            <Route path='/home' exact component={Blog}></Route>
                             <Route path='/home/work' component={Work}></Route>
                             <Route path='/home/resume' component={Resume}></Route>
-                        </Switch>
                     </div>
                     <div className="footer">
                         <div className='concat'>
