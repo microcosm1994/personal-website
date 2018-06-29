@@ -14,9 +14,9 @@
   overflow: hidden;
 }
 .Home .Home-header .Home-header-box .Home-logo {
-  width: 46px;
-  height: 46px;
-  margin-top: 5px;
+  width: 56px;
+  height: 40px;
+  margin-top: 10px;
   float: left;
 }
 .Home .Home-header .Home-header-box .Home-logo img {
@@ -28,6 +28,7 @@
   width: 260px;
   height: 30px;
   margin-top: 13px;
+  margin-left: 10px;
 }
 .Home .Home-header .Home-header-box .Home-search .ant-input-search {
   width: 100%;

@@ -11,12 +11,13 @@ import Resume from './Resume'
 import Blog from './Blog'
 import Work from './Work'
 import '../css/Home.css'
+import '../css/global.css'
 import 'antd/lib/input/style/css'
 import 'antd/lib/avatar/style/css'
 import 'antd/lib/menu/style/css'
 import 'antd/lib/dropdown/style/css'
 import 'antd/lib/icon/style/css'
-import Logo from '../img/logo.png'
+import Logo from '../img/logo20180627-04.png'
 
 // 搜索输入框组件
 const Search = Input.Search

@@ -8,7 +8,6 @@ import {
 import Start from './component/Start'
 import Home from './component/Home'
 import Admin from './component/Admin'
-import Blog from  './component/Blog'
 
 class App extends Component {
     render() {
