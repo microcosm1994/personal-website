@@ -4,10 +4,12 @@ const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
     async index() {
-        this.ctx.body = 'hiq, egg';
+        console.log(1);
+        this.ctx.body = {staus: 0, message: 'qingasdkj'};
     }
     async hello () {
-        this.ctx.body = 'hiq, eggaaaa';
+        console.log(2);
+        this.ctx.body = {staus: 0, message: 'qingasdkj'}
     }
 
 }

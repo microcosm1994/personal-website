@@ -13,6 +13,8 @@ import 'antd/lib/menu/style/css'
 import 'antd/lib/dropdown/style/css'
 import 'antd/lib/icon/style/css'
 import 'antd/lib/modal/style/css'
+import 'antd/lib/select/style/css'
+import 'antd/lib/message/style/css'
 import '../css/global.css'
 import '../css/Admin.css'
 // 引入img
