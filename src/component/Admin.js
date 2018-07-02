@@ -4,7 +4,7 @@ import {createBrowserHistory} from 'history'
 //引入组件
 import {Input, Avatar, Menu, Dropdown, Icon} from 'antd'
 import AdminHome from './Admin-home'
-import Addblog from './Addblog'
+import Addblog from './Admin-blog'
 import Home from './Home'
 // 引入css
 import 'antd/lib/input/style/css'
@@ -12,6 +12,7 @@ import 'antd/lib/avatar/style/css'
 import 'antd/lib/menu/style/css'
 import 'antd/lib/dropdown/style/css'
 import 'antd/lib/icon/style/css'
+import 'antd/lib/modal/style/css'
 import '../css/global.css'
 import '../css/Admin.css'
 // 引入img
@@ -27,6 +28,7 @@ const menu = (
         </Menu.Item>
     </Menu>
 )
+
 class Admin extends Component {
     render() {
         return(
@@ -43,6 +45,7 @@ class Admin extends Component {
                                 <li className='sildebar-item'><Link to='/admin/addblog'>🎫添加作品</Link></li>
                                 <li className='sildebar-item'><Link to='/admin/addblog'>🔨上传工具</Link></li>
                                 <li className='sildebar-item'><Link to='/admin/addblog'>📂网盘</Link></li>
+                                <li className='sildebar-item'><Link to='/admin/addblog'>🔧设置</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -68,5 +71,6 @@ class Admin extends Component {
         )
     }
 }
+
 
 export default Admin
