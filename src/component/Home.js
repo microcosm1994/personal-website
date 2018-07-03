@@ -27,6 +27,9 @@ const menu = (
         <Menu.Item key="0">
             <Link to="/home/resume">个人信息</Link>
         </Menu.Item>
+        <Menu.Item key="0">
+            <a href="/admin">后台管理</a>
+        </Menu.Item>
     </Menu>
 )
 // 创建history对象
@@ -72,7 +75,7 @@ class Home extends Component {
                                     </li>
                                     <li><Link to="/home/work">Works</Link></li>
                                     <li><Link to="/home/tool">Tool</Link></li>
-                                    <li><Link to="/home/disk">Blog</Link></li>
+                                    <li><Link to="/home/disk">Disk</Link></li>
                                 </ul>
                             </div>
                             <Dropdown overlay={menu} trigger={['click']}>

@@ -18,5 +18,11 @@ module.exports = appInfo => {
     config.cors = {
         allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
     };
+    config.mongoose = {
+        client: {
+            url: 'mongodb://127.0.0.1:27017/blog',
+            options: {},
+        },
+    };
     return config;
 };

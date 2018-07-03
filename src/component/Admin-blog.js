@@ -58,7 +58,7 @@ class Admin_blog extends Component {
         blogResult.tags = this.state.tags
         blogResult.content = this.state.content
         blogResult.date = new Date()
-        axios.post('/api/save').then((res) => {
+        axios.post('/api/blog', blogResult).then((res) => {
             console.log(res);
         })
         this.setState({
