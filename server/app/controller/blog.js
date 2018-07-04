@@ -75,16 +75,13 @@ exports.index = function* (ctx) {
 
 exports.new = async () => {};
 
-exports.create = function* () {
-    const {ctx} = this
+module.exports.create = function* (ctx) {
     let result = {
         status: 0,
         message: '保存成功'
     }
     let body = ctx.request.body
     let data = yield ctx.model.Blog.create(body);
-    console.log(data);
-    result.data = data
     ctx.body = result
 };
 
@@ -95,3 +92,4 @@ exports.edit = async () => {};
 exports.update = async () => {};
 
 exports.destroy = async () => {};
+// module.exports = BlogController

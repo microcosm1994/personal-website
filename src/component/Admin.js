@@ -5,7 +5,6 @@ import {createBrowserHistory} from 'history'
 import {Input, Avatar, Menu, Dropdown, Icon} from 'antd'
 import AdminHome from './Admin-home'
 import Addblog from './Admin-blog'
-import Home from './Home'
 // 引入css
 import 'antd/lib/input/style/css'
 import 'antd/lib/avatar/style/css'

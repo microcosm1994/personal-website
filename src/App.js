@@ -8,6 +8,7 @@ import {
 import Start from './component/Start'
 import Home from './component/Home'
 import Admin from './component/Admin'
+import Login from './component/Login'
 
 class App extends Component {
     render() {
@@ -17,6 +18,7 @@ class App extends Component {
                     <Route path='/' exact component={Start}></Route>
                     <Route path='/home' component={Home}></Route>
                     <Route path='/admin' component={Admin}></Route>
+                    <Route path='/login' component={Login}></Route>
                 </Switch>
             </BrowserRouter>
         );

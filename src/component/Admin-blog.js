@@ -1,28 +1,33 @@
 import React, {Component} from 'react'
+import {createBrowserHistory} from 'history'
 import axios from 'axios'
 import {Input, Icon, Button, Modal, Select, Radio, message} from 'antd'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import '../css/Admin-blog.css'
+
+const history = createBrowserHistory()
 const toolbarOptions = [
     ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
     ['blockquote', 'code-block'],
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
-    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-    [{ 'font': [] }],
-    [{ 'align': [] }],
+    [{'header': 1}, {'header': 2}],               // custom button values
+    [{'list': 'ordered'}, {'list': 'bullet'}],
+    [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
+    [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
+    [{'direction': 'rtl'}],                         // text direction
+    [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
+    [{'header': [1, 2, 3, 4, 5, 6, false]}],
+    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+    [{'font': []}],
+    [{'align': []}],
     ['clean']                                         // remove formatting button
 ];
 const Option = Select.Option;
+const confirm = Modal.confirm;
+
 class Admin_blog extends Component {
-    constructor (props) {
-        super (props)
+    constructor(props) {
+        super(props)
         this.state = {
             title: '',
             type: '',
@@ -31,19 +36,20 @@ class Admin_blog extends Component {
             visible: false
         }
     }
+
     // blog标题
     emitEmpty = () => {
         this.userNameInput.focus();
-        this.setState({ title: '' });
+        this.setState({title: ''});
     }
 
     onChangeUserName = (e) => {
-        this.setState({ title: e.target.value });
+        this.setState({title: e.target.value});
     }
     // modal弹出层
     showModal = () => {
         let {title, content} = this.state
-        if( title !== ''&& content !== ''){
+        if (title !== '' && content !== '') {
             this.setState({
                 visible: true,
             });
@@ -51,15 +57,17 @@ class Admin_blog extends Component {
             message.info('标题和内容不能为空')
         }
     }
-    modalOk = (e) => {
+    modalOk = () => {
         let blogResult = {}
         blogResult.title = this.state.title
         blogResult.type = this.state.type
         blogResult.tags = this.state.tags
         blogResult.content = this.state.content
         blogResult.date = new Date()
-        axios.post('/api/blog', blogResult).then((res) => {
-            console.log(res);
+        axios.post('/api/blog', blogResult).then((response) => {
+            if (response.data.status === 0) {
+                this.showConfirm(response.data.message)
+            }
         })
         this.setState({
             visible: false,
@@ -88,13 +96,30 @@ class Admin_blog extends Component {
     tagChange = (value) => {
         this.setState({tags: value})
     }
+    // 消息提示框
+    showConfirm = (message, reload, jump) => {
+        confirm({
+            title: message,
+            content: '你要继续写博客吗',
+            onOk() {
+                history.push('/admin/addblog', { some: 'state' })
+                window.location.href = window.location.href
+            },
+            onCancel() {
+                history.push('/admin', { some: 'state' })
+                window.location.href = window.location.href
+            },
+        });
+    }
+
     render() {
-        const { title, content, visible } = this.state
-        const suffix = title ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
+        const {title, content, visible} = this.state
+        const suffix = title ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
         const tagChildren = [];
         const tagList = ['node.js', 'html', 'css', 'js', 'express', 'egg.js', 'jquery', 'python', 'flask', 'mongodb', 'vue.js', 'react.js', 'antd', 'vuex', 'nginx', 'linux', 'less'];
-        for( let i = 0; i < tagList.length; i++) {
-            tagChildren.push(<Option style={{width: '30%',display: 'inline-block',}} key={tagList[i]}>{tagList[i]}</Option>)
+        for (let i = 0; i < tagList.length; i++) {
+            tagChildren.push(<Option style={{width: '30%', display: 'inline-block',}}
+                                     key={tagList[i]}>{tagList[i]}</Option>)
         }
         return (
             <div className="Addblog">
@@ -102,7 +127,7 @@ class Admin_blog extends Component {
                 <div className='blog-title'>
                     <Input
                         placeholder="请输入文章标题"
-                        prefix={<Icon type="edit" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        prefix={<Icon type="edit" style={{color: 'rgba(0,0,0,.25)'}}/>}
                         suffix={suffix}
                         value={title}
                         onChange={this.onChangeUserName}
@@ -112,9 +137,9 @@ class Admin_blog extends Component {
                 <ReactQuill
                     theme="snow"
                     placeholder="请输入文章内容"
-                    value={ content }
+                    value={content}
                     modules={{toolbar: toolbarOptions}}
-                    onChange={(val)=>{
+                    onChange={(val) => {
                         this.setState({content: val})
                         console.log(val)
                     }}/>
@@ -123,7 +148,7 @@ class Admin_blog extends Component {
                 </div>
                 <Modal
                     title="选择分类"
-                    maskClosable = {false}
+                    maskClosable={false}
                     visible={visible}
                     onOk={this.modalOk}
                     onCancel={(visible) => {
@@ -136,7 +161,7 @@ class Admin_blog extends Component {
                         <span className='blog-type-title'>分类:</span>
                         <Select
                             showSearch
-                            style={{ width: '40%' }}
+                            style={{width: '40%'}}
                             placeholder="选择文章分类"
                             optionFilterProp="children"
                             onChange={this.typeChange}
@@ -153,7 +178,7 @@ class Admin_blog extends Component {
                         <span className='blog-type-title'>标签:</span>
                         <Select
                             mode="tags"
-                            style={{ width: '70%' }}
+                            style={{width: '70%'}}
                             onChange={this.tagChange}
                             tokenSeparators={[',']}
                         >
