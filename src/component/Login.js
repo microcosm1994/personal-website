@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import {Router, Switch, Link, Route} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import Login_form from './Login-form'
+import Login_find from './Login-find'
+import Register from './Register'
 import BgVideo from '../img/night.mp4'
 import '../css/Login.css'
 const history = createBrowserHistory()
@@ -54,13 +56,12 @@ class Login extends Component {
             <Router history={history}>
                 <div className='Login'>
                     <video style={this.state.bgStyle} className='Login-bg' autoPlay loop src={BgVideo}></video>
-                    <Route>
-
-                    </Route>
                     <div className='Login-container'>
                         <Route path='/login' exact component={Login_form}></Route>
+                        <Route path='/login/find' component={Login_find}></Route>
+                        <Route path='/login/register' component={Register}></Route>
                         <div className="container-footer">
-                            <a href="/register">注册</a>
+                            <Link to='/login/register'>注册</Link>
                             <Link to='/login/find'>找回密码</Link>
                         </div>
                     </div>

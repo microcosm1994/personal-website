@@ -68,7 +68,7 @@ class Login_form extends Component {
                     <div className='form-remember'>
                         <div className="form-remember-radio">
                             <input type="checkbox" name='remember'/>
-                            <span>记住账号</span>
+                            <span>保持登录</span>
                         </div>
                     </div>
                     <div className="from-btn">

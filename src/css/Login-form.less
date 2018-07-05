@@ -53,7 +53,6 @@
       input{
         width: 16px;
         height: 16px;
-        background: transparent;
         border:2px solid #1890ff;
         border-radius: 4px;
         margin-top: 4px;
@@ -62,14 +61,20 @@
         -webkit-appearance: none;
         cursor: pointer;
         box-sizing: border-box;
-        padding: 4px;
+        position: relative;
       }
-      input[type="checkbox"]:checked {
+      input[type="checkbox"]:checked:before{
+        content: '';
+        color:#fff;
         background: #1890ff;
-        background-size: 80% 80%;
-        background-origin: border-box;
-        //background: url(/public/icon.jpg) no-repeat;
-        //background-size: 100% 100%;
+        display: block;
+        width: 9px;
+        height: 9px;
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        border-radius: 2px;
       }
       span{
         line-height: 24px;
@@ -90,5 +95,11 @@
     color:#fff;
     cursor: pointer;
     line-height:30px;
+    &:hover{
+      background: #40a9ff;
+    }
+    &:active{
+      background: #1890ff;
+    }
   }
 }

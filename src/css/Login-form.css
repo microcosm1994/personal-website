@@ -56,7 +56,6 @@
 .Login-form .form-remember .form-remember-radio input {
   width: 16px;
   height: 16px;
-  background: transparent;
   border: 2px solid #1890ff;
   border-radius: 4px;
   margin-top: 4px;
@@ -65,12 +64,20 @@
   -webkit-appearance: none;
   cursor: pointer;
   box-sizing: border-box;
-  padding: 4px;
+  position: relative;
 }
-.Login-form .form-remember .form-remember-radio input[type="checkbox"]:checked {
+.Login-form .form-remember .form-remember-radio input[type="checkbox"]:checked:before {
+  content: '';
+  color: #fff;
   background: #1890ff;
-  background-size: 80% 80%;
-  background-origin: border-box;
+  display: block;
+  width: 9px;
+  height: 9px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  border-radius: 2px;
 }
 .Login-form .form-remember .form-remember-radio span {
   line-height: 24px;
@@ -89,4 +96,10 @@
   color: #fff;
   cursor: pointer;
   line-height: 30px;
+}
+.Login-form .from-btn:hover {
+  background: #40a9ff;
+}
+.Login-form .from-btn:active {
+  background: #1890ff;
 }
