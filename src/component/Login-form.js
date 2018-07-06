@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
-import {Router, Switch, Link, Route} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
-import BgVideo from '../img/night.mp4'
 import '../css/Login-form.css'
 import Logo from '../img/logo20180627-04.png'
 const history = createBrowserHistory()
