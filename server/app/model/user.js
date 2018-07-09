@@ -18,7 +18,8 @@ module.exports = app => {
             default: 'http://eago.oss-cn-hongkong.aliyuncs.com/portrait/timg.jpg'
         },
         isAdmin: {
-            type: Boolean
+            type: Boolean,
+            default: false
         },
         date: {
             type: Date

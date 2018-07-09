@@ -27,7 +27,7 @@ const menu = (
         <Menu.Item key="0">
             <Link to="/home/resume">个人信息</Link>
         </Menu.Item>
-        <Menu.Item key="0">
+        <Menu.Item key="1">
             <a href="/login">后台管理</a>
         </Menu.Item>
     </Menu>

@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Router, Switch, Link, Route} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import '../css/Login-form.css'
 import Logo from '../img/logo20180627-04.png'
@@ -71,6 +72,10 @@ class Login_form extends Component {
                     </div>
                     <div className="from-btn">
                         立即登录
+                    </div>
+                    <div className="container-footer">
+                        <Link to='/login/register'>注册</Link>
+                        <Link to='/login/find'>找回密码</Link>
                     </div>
                 </div>
             </div>

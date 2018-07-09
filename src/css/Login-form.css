@@ -103,3 +103,14 @@
 .Login-form .from-btn:active {
   background: #1890ff;
 }
+.Login-form .container-footer {
+  width: 240px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.Login-form .container-footer a:nth-child(1) {
+  float: left;
+}
+.Login-form .container-footer a:nth-child(2) {
+  float: right;
+}

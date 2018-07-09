@@ -60,10 +60,6 @@ class Login extends Component {
                         <Route path='/login' exact component={Login_form}></Route>
                         <Route path='/login/find' component={Login_find}></Route>
                         <Route path='/login/register' component={Register}></Route>
-                        <div className="container-footer">
-                            <Link to='/login/register'>注册</Link>
-                            <Link to='/login/find'>找回密码</Link>
-                        </div>
                     </div>
                 </div>
             </Router>
