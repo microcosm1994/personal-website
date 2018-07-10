@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Router, Switch, Link, Route} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
+import axios from 'axios'
 import Login_form from './Login-form'
 import Login_find from './Login-find'
 import Register from './Register'

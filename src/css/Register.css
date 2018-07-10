@@ -40,6 +40,19 @@
 .Register .Register-form .form-input:nth-child(2) {
   border-top: 1px solid #666;
 }
+.Register .Register-form .form-input:nth-child(4) input {
+  width: 139px;
+  display: inline-block;
+  vertical-align: top;
+}
+.Register .Register-form .form-input:nth-child(4) span {
+  display: inline-block;
+  vertical-align: top;
+  width: 100px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
 .Register .Register-form .form-input:nth-child(6) {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;

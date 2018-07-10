@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Router, Switch, Link, Route} from 'react-router-dom'
 import {Button, message} from 'antd'
 import {createBrowserHistory} from 'history'
+import axios from 'axios'
 import Logo from '../img/logo20180627-04.png'
 import '../css/Register.css'
 import 'antd/lib/button/style/css'
@@ -31,8 +32,13 @@ class Register extends Component{
             verify_style: {
                 display: 'none'
             },
+            code: {
+              data: '',
+              text: ''
+            },
             loading: false
         }
+        this.getcode()
     }
     handleChange = (key, event) => {
         let form = this.state.form
@@ -100,8 +106,23 @@ class Register extends Component{
         this.setState({form_style: {display: 'block'}})
         this.setState({verify_style: {display: 'none'}})
     }
+    // 获取图片验证码
+    getcode = () => {
+        let t = new Date()
+        axios.get('/api/users/code?t=' + t.getTime()).then((response) => {
+            if (response.status === 200) {
+                console.log(response.data);
+                this.setState({
+                    code: {
+                        data: response.data.data,
+                        text: response.data.text
+                    }
+                })
+            }
+        })
+    }
     render() {
-        const {error, form} = this.state
+        const {error, form, code} = this.state
         return(
             <div className='Register'>
                 <div className='Register-logo'>
@@ -122,6 +143,7 @@ class Register extends Component{
                     </div>
                     <div className='form-input'>
                         <input type="text" placeholder='请输入图片验证码' value={form.verify_img} onChange={this.handleChange.bind(this, 'verify_img')}/>
+                        <span onClick={this.getcode} dangerouslySetInnerHTML={{__html: code.data}}></span>
                     </div>
                     <div className='form-input'>
                         <input type="password" placeholder='请输入密码' value={form.password} onChange={this.handleChange.bind(this, 'password')}/>

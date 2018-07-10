@@ -1,5 +1,5 @@
 'use strict'
 module.exports = app => {
     const { router, controller } = app;
-    router.post('/blog', controller.blog.create);
+    router.get('/users/code', controller.users.code);
 };
