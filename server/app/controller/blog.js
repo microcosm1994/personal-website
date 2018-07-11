@@ -6,13 +6,13 @@ exports.index = function* (ctx) {
 
 exports.new = async () => {};
 // 保存博客
-module.exports.create = function* (ctx) {
+module.exports.create = (ctx) => {
     let result = {
         status: 0,
         message: '保存成功'
     }
     let body = ctx.request.body
-    let data = yield ctx.model.Blog.create(body);
+    let data = ctx.model.Blog.create(body);
     ctx.body = result
 };
 

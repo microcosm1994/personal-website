@@ -1,16 +1,18 @@
 import React, {Component} from 'react'
 import {Router, Switch, Link, Route} from 'react-router-dom'
-import {Button, message} from 'antd'
+import {Button, message, Tooltip} from 'antd'
 import {createBrowserHistory} from 'history'
 import axios from 'axios'
 import Logo from '../img/logo20180627-04.png'
 import '../css/Register.css'
 import 'antd/lib/button/style/css'
 import 'antd/lib/message/style/css'
+import 'antd/lib/tooltip/style/css'
+
 const history = createBrowserHistory()
 
-class Register extends Component{
-    constructor(props){
+class Register extends Component {
+    constructor(props) {
         super(props)
         this.state = {
             form: {
@@ -24,7 +26,7 @@ class Register extends Component{
             verify_email: '',
             error: {
                 status: {display: 'none'},
-                message: '昵称不能为空'
+                message: ''
             },
             form_style: {
                 display: 'block'
@@ -32,14 +34,18 @@ class Register extends Component{
             verify_style: {
                 display: 'none'
             },
-            code: {
-              data: '',
-              text: ''
-            },
-            loading: false
+            email_code: '',
+            code_svg: '',
+            loading: false,
+            countdown: '获取验证码'
         }
+    }
+
+    componentDidMount() {
         this.getcode()
     }
+
+    // 数据双向绑定
     handleChange = (key, event) => {
         let form = this.state.form
         for (let item in this.state.form) {
@@ -49,40 +55,56 @@ class Register extends Component{
             }
         }
     }
-    handleRegister = () => {
+    // 邮箱验证码双向绑定
+    emailChange = (event) => {
+        this.setState({
+            email_code: event.target.value
+        })
+    }
+    // 保存表单、验证账号唯一
+    handleForm = () => {
         let flag = true
-        let form = {
-            invite: '',
-            nickname: '',
-            username: '',
-            password: '',
-        }
         let keyvalue = ''
-        for (let item in this.state.form){
-            if(this.state.form[item] === '') {
+        // 验证表单是否为空
+        for (let item in this.state.form) {
+            if (this.state.form[item] === '') {
                 flag = false
                 keyvalue = item
                 break
             }
         }
         if (flag) {
-            this.setState({
-                error: {
-                    status: {display: 'none'},
-                    message: ''
+            // 验证图片验证码是否正确
+            axios.get('/api//users/verify_code?code=' + this.state.form.verify_img).then((response) => {
+                if (response.data.status === 0) {
+                    // 验证邮箱是否可被注册
+                    axios.get('/api/users/validate?username=' + this.state.form.username).then((response) => {
+                        if (response.data.status === 0) {
+                            this.setState({
+                                error: {
+                                    status: {display: 'none'},
+                                    message: ''
+                                }
+                            })
+                            this.setState({form_style: {display: 'none'}})
+                            this.setState({verify_style: {display: 'block'}})
+                            this.getemail()
+                        } else{
+                            message.error('邮箱已被注册')
+                        }
+                    })
+                } else {
+                    // 如果验证码错误就重新获取验证码
+                    this.setState({
+                        error: {
+                            status: {display: 'block'},
+                            message: '验证码错误,请重试!'
+                        }
+                    })
+                    this.getcode()
                 }
             })
-            for (let key in form) {
-                for (let key2 in this.state.form) {
-                    if (key === key2) {
-                        form[key] = this.state.form[key2]
-                    }
-                }
-            }
-            this.setState({form_style: {display: 'none'}})
-            this.setState({verify_style: {display: 'block'}})
-            console.log(form);
-        } else{
+        } else {
             let arr = {
                 invite: '邀请码',
                 nickname: '昵称',
@@ -99,9 +121,7 @@ class Register extends Component{
             })
         }
     }
-    enterLoading = () => {
-        this.setState({ loading: true });
-    }
+    // 表单显示隐藏
     verifyBack = () => {
         this.setState({form_style: {display: 'block'}})
         this.setState({verify_style: {display: 'none'}})
@@ -109,21 +129,70 @@ class Register extends Component{
     // 获取图片验证码
     getcode = () => {
         let t = new Date()
-        axios.get('/api/users/code?t=' + t.getTime()).then((response) => {
-            if (response.status === 200) {
-                console.log(response.data);
-                this.setState({
-                    code: {
-                        data: response.data.data,
-                        text: response.data.text
-                    }
-                })
+        axios.get('/api/users/getcode?t=' + t.getTime()).then((response) => {
+            if (response.data.status === 0) {
+                this.setState({code_svg: response.data.data})
             }
         })
     }
+    // 获取邮箱验证码
+    getemail = () => {
+        let self = this
+        axios.get('/api/users/getemail?username=' + this.state.form.username).then((response) => {
+            if (response.data.status === 0) {
+                let s = 60
+                this.setState({
+                    countdown: s + 's',
+                    loading: true
+                })
+                this.timerID = setInterval(() => {
+                    s--
+                    this.setState({countdown: s + 's'})
+                    if ( s < 0 || s === 0) {
+                        s = 60
+                        this.setState({
+                            countdown: '获取验证码',
+                            loading: false
+                        })
+                        clearInterval(self.timerID)
+                    }
+                }, 1000)
+            }
+        })
+    }
+    // 注册
+    register = () => {
+        let code = this.state.email_code
+        let form = {
+            invite: '',
+            nickname: '',
+            username: '',
+            password: '',
+        }
+        axios.get('/api/users/verify_email?code=' + code).then((response) => {
+            clearInterval(this.timerID)
+            if (response.data.status === 0) {
+                for (let key in form) {
+                    for (let key2 in this.state.form) {
+                        if (key === key2) {
+                            form[key] = this.state.form[key2]
+                        }
+                    }
+                }
+                axios.post('/api/users/register', form).then((response) => {
+                    if (response.data.status === 0) {
+                        message.success(response.data.message)
+                    }
+                })
+            }else{
+                message.error(response.data.message)
+            }
+        })
+    }
+
     render() {
-        const {error, form, code} = this.state
-        return(
+        const {error, form, code_svg, countdown, loading, email_code} = this.state
+        return (
             <div className='Register'>
                 <div className='Register-logo'>
                     <img src={Logo} alt=""/>
@@ -133,28 +202,36 @@ class Register extends Component{
                 </div>
                 <div className='Register-form' style={this.state.form_style}>
                     <div className='form-input'>
-                        <input type="text" placeholder='请输入邀请码' value={form.invite} onChange={this.handleChange.bind(this, 'invite')}/>
+                        <input type="text" placeholder='请输入邀请码' value={form.invite}
+                               onChange={this.handleChange.bind(this, 'invite')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="text" placeholder='请输入昵称' value={form.nickname} onChange={this.handleChange.bind(this, 'nickname')}/>
+                        <input type="text" placeholder='请输入昵称' value={form.nickname}
+                               onChange={this.handleChange.bind(this, 'nickname')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="text" placeholder='请输入邮箱地址' value={form.username} onChange={this.handleChange.bind(this, 'username')}/>
+                        <input type="text" placeholder='请输入邮箱地址' value={form.username}
+                               onChange={this.handleChange.bind(this, 'username')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="text" placeholder='请输入图片验证码' value={form.verify_img} onChange={this.handleChange.bind(this, 'verify_img')}/>
-                        <span onClick={this.getcode} dangerouslySetInnerHTML={{__html: code.data}}></span>
+                        <input type="text" placeholder='请输入图片验证码' value={form.verify_img}
+                               onChange={this.handleChange.bind(this, 'verify_img')}/>
+                        <Tooltip placement="top" title='点击更换新的验证码'>
+                            <span onClick={this.getcode} dangerouslySetInnerHTML={{__html: code_svg}}></span>
+                        </Tooltip>
                     </div>
                     <div className='form-input'>
-                        <input type="password" placeholder='请输入密码' value={form.password} onChange={this.handleChange.bind(this, 'password')}/>
+                        <input type="password" placeholder='请输入密码' value={form.password}
+                               onChange={this.handleChange.bind(this, 'password')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="password" placeholder='请确认密码' value={form.password_test} onChange={this.handleChange.bind(this, 'password_test')}/>
+                        <input type="password" placeholder='请确认密码' value={form.password_test}
+                               onChange={this.handleChange.bind(this, 'password_test')}/>
                     </div>
                     <div className="from-error" style={error.status}>
                         <p>{error.message}</p>
                     </div>
-                    <div className="from-btn" onClick={this.handleRegister}>
+                    <div className="from-btn" onClick={this.handleForm}>
                         立即注册
                     </div>
                     <div className="container-footer">
@@ -164,12 +241,10 @@ class Register extends Component{
                 </div>
                 <div className='Register-verify' style={this.state.verify_style}>
                     <div className='verify-input'>
-                        <input type="text" placeholder='请输入邮箱验证码'/>
-                        <Button type="primary" loading={this.state.loading} onClick={this.enterLoading}>
-                            获取验证码
-                        </Button>
+                        <input type="text" placeholder='请输入邮箱验证码' onChange={this.emailChange} value={email_code}/>
+                        <Button type="primary" loading={loading} onClick={this.getemail}>{countdown}</Button>
                     </div>
-                    <div className='verify-btn'>
+                    <div className='verify-btn' onClick={this.register}>
                         确认
                     </div>
                     <div className='verify-back' onClick={this.verifyBack}>返回重新填写注册信息</div>
