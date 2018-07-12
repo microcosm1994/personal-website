@@ -24,5 +24,6 @@ module.exports = appInfo => {
             options: {},
         },
     };
+    config.keys = 'microcosm,microcosm1994'
     return config;
 };

@@ -53,10 +53,11 @@ class Login extends Component {
     }
 
     render() {
+        const {bgStyle} = this.state
         return (
             <Router history={history}>
                 <div className='Login'>
-                    <video style={this.state.bgStyle} className='Login-bg' autoPlay loop src={BgVideo}></video>
+                    <video style={bgStyle} className='Login-bg' autoPlay loop src={BgVideo}></video>
                     <div className='Login-container'>
                         <Route path='/login' exact component={Login_form}></Route>
                         <Route path='/login/find' component={Login_find}></Route>

@@ -294,6 +294,9 @@ class Register extends Component {
                         确认
                     </div>
                     <div className='verify-back' onClick={this.verifyBack}>返回重新填写注册信息</div>
+                    <div className='verify-back'>
+                        <Link to='/login'>登录</Link>>
+                    </div>
                 </div>
             </div>
         )

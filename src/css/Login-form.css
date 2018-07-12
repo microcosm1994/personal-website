@@ -31,14 +31,30 @@
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
 }
+.Login-form .form-input {
+  border-top: 1px solid #333;
+}
 .Login-form .form-input:nth-child(1) {
+  border: none;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-.Login-form .form-input:nth-child(2) {
+.Login-form .form-input:nth-child(3) {
   border-top: 1px solid #666;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+.Login-form .form-input:nth-child(3) input {
+  width: 140px;
+  display: inline-block;
+  vertical-align: top;
+}
+.Login-form .form-input:nth-child(3) span {
+  width: 99px;
+  display: inline-block;
+  vertical-align: top;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
 }
 .Login-form .form-remember {
   width: 240px;

@@ -96,19 +96,35 @@ module.exports.verify_email = (ctx) => {
     }
 }
 // 注册账号
-module.exports.register = function* (ctx){
+module.exports.register = function* (ctx) {
     let form = ctx.request.body
     let hexInvite = md5(Invite)
     // 对密码进行二次加密
     form.password = sha256(form.password, form.username)
     if (hexInvite === form.invite) {
         let result = yield ctx.model.User.create(form);
+        let data = {
+            username: result.username,
+            nickname: result.nickname,
+            portrait: result.portrait,
+            createTime: result.createTime,
+            isAdmin: result.isAdmin,
+            _id: result._id
+        }
+        let sgin = 'account?username='+ data.username + '&_id=' + data._id
+        // cookie过期时间
+        let deadline = 1000 * 60 * 60 * 24 * 30 * 3
+        ctx.cookies.set('sgin', sgin, {
+            maxAge: deadline,
+            httpOnly: true, // 默认就是 true
+            encrypt: true, // 加密传输
+        });
         ctx.body = {
             status: 0,
             message: '注册成功',
-            data: result
+            data: data
         }
-    }else{
+    } else {
         ctx.body = {
             status: 1,
             message: '邀请码错误'
@@ -116,7 +132,7 @@ module.exports.register = function* (ctx){
     }
 };
 
-function timestampToTime (timestamp) {
+function timestampToTime(timestamp) {
     let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
     let Y = date.getFullYear() + '-'
     let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
@@ -127,13 +143,13 @@ function timestampToTime (timestamp) {
     return Y + M + D + h + m + s;
 }
 
-function md5 (str) {
+function md5(str) {
     const hash = Crypto.createHash('md5');
     hash.update(str)
     return hash.digest('hex')
 }
 
-function sha256 (str, username) {
+function sha256(str, username) {
     const hmac = Crypto.createHmac('sha256', username);
     hmac.update(str)
     return hmac.digest('hex')
