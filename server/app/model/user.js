@@ -21,7 +21,7 @@ module.exports = app => {
             type: Boolean,
             default: false
         },
-        date: {
+        createTime: {
             type: Date
         }
     })

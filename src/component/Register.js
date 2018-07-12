@@ -3,6 +3,7 @@ import {Router, Switch, Link, Route} from 'react-router-dom'
 import {Button, message, Tooltip} from 'antd'
 import {createBrowserHistory} from 'history'
 import axios from 'axios'
+import md5 from 'md5'
 import Logo from '../img/logo20180627-04.png'
 import '../css/Register.css'
 import 'antd/lib/button/style/css'
@@ -63,63 +64,87 @@ class Register extends Component {
     }
     // 保存表单、验证账号唯一
     handleForm = () => {
-        let flag = true
-        let keyvalue = ''
+        let form = this.state.form
+        let arr = {
+            invite: '邀请码',
+            nickname: '昵称',
+            username: '邮箱地址',
+            password: '密码',
+            password_test: '确认密码',
+            verify_img: '图片验证码'
+        }
         // 验证表单是否为空
-        for (let item in this.state.form) {
-            if (this.state.form[item] === '') {
-                flag = false
-                keyvalue = item
-                break
+        for (let item in form) {
+            if (form[item] === '') {
+                this.setState({
+                    error: {
+                        status: {display: 'block'},
+                        message: arr[item] + '不能为空'
+                    }
+                })
+                return false
             }
         }
-        if (flag) {
-            // 验证图片验证码是否正确
-            axios.get('/api//users/verify_code?code=' + this.state.form.verify_img).then((response) => {
-                if (response.data.status === 0) {
-                    // 验证邮箱是否可被注册
-                    axios.get('/api/users/validate?username=' + this.state.form.username).then((response) => {
-                        if (response.data.status === 0) {
-                            this.setState({
-                                error: {
-                                    status: {display: 'none'},
-                                    message: ''
-                                }
-                            })
-                            this.setState({form_style: {display: 'none'}})
-                            this.setState({verify_style: {display: 'block'}})
-                            this.getemail()
-                        } else{
-                            message.error('邮箱已被注册')
-                        }
-                    })
-                } else {
-                    // 如果验证码错误就重新获取验证码
-                    this.setState({
-                        error: {
-                            status: {display: 'block'},
-                            message: '验证码错误,请重试!'
-                        }
-                    })
-                    this.getcode()
-                }
-            })
-        } else {
-            let arr = {
-                invite: '邀请码',
-                nickname: '昵称',
-                username: '邮箱地址',
-                password: '密码',
-                password_test: '确认密码',
-                verify_img: '图片验证码'
-            }
+        // 验证邮箱格式
+        if (form.username.indexOf('@') === -1) {
             this.setState({
                 error: {
                     status: {display: 'block'},
-                    message: arr[keyvalue] + '不能为空'
+                    message: '邮箱格式不正确'
                 }
             })
+            return false
         }
+        // 验证密码
+        if (form.password.length > 5 && form.password.length < 31) {
+            if (form.password !== form.password_test) {
+                this.setState({
+                    error: {
+                        status: {display: 'block'},
+                        message: '俩次输入的密码不一样，请重新输入。'
+                    }
+                })
+                return false
+            }
+        } else {
+            this.setState({
+                error: {
+                    status: {display: 'block'},
+                    message: '密码长度保持在6-30之间'
+                }
+            })
+            return false
+        }
+        // 验证图片验证码是否正确
+        axios.get('/api//users/verify_code?code=' + this.state.form.verify_img).then((response) => {
+            if (response.data.status === 0) {
+                // 验证邮箱是否可被注册
+                axios.get('/api/users/validate?username=' + this.state.form.username).then((response) => {
+                    if (response.data.status === 0) {
+                        this.setState({
+                            error: {
+                                status: {display: 'none'},
+                                message: ''
+                            }
+                        })
+                        this.setState({form_style: {display: 'none'}})
+                        this.setState({verify_style: {display: 'block'}})
+                        this.getemail()
+                    } else {
+                        message.error('邮箱已被注册')
+                    }
+                })
+            } else {
+                // 如果验证码错误就重新获取验证码
+                this.setState({
+                    error: {
+                        status: {display: 'block'},
+                        message: '验证码错误,请重试!'
+                    }
+                })
+                this.getcode()
+            }
+        })
     }
     // 表单显示隐藏
     verifyBack = () => {
@@ -148,7 +173,7 @@ class Register extends Component {
                 this.timerID = setInterval(() => {
                     s--
                     this.setState({countdown: s + 's'})
-                    if ( s < 0 || s === 0) {
+                    if (s < 0 || s === 0) {
                         s = 60
                         this.setState({
                             countdown: '获取验证码',
@@ -168,10 +193,27 @@ class Register extends Component {
             nickname: '',
             username: '',
             password: '',
+            createTime: Date.now()
         }
+        // 验证验证码是否为空
+        if (code === '') {
+            message.error('请输入你获得的6位数邮箱验证码')
+            return false
+        }
+        // 验证验证码是否为6位数
+        if(code.length !== 6){
+            message.error('邮箱验证码格式错误')
+            return false
+        }
+        // 验证邮箱验证码是否正确，如果正确保存注册信息到数据库
         axios.get('/api/users/verify_email?code=' + code).then((response) => {
-            clearInterval(this.timerID)
             if (response.data.status === 0) {
+                // 发送邮件成功之后清楚定时器，初始化邮箱验证码倒计时
+                clearInterval(this.timerID)
+                this.setState({
+                    countdown: '获取验证码',
+                    loading: false
+                })
                 for (let key in form) {
                     for (let key2 in this.state.form) {
                         if (key === key2) {
@@ -179,12 +221,16 @@ class Register extends Component {
                         }
                     }
                 }
+                // 对数据进行加密
+                form.invite = md5(form.invite)
+                form.password = md5(form.password)
+                // 发送注册信息
                 axios.post('/api/users/register', form).then((response) => {
                     if (response.data.status === 0) {
                         message.success(response.data.message)
                     }
                 })
-            }else{
+            } else {
                 message.error(response.data.message)
             }
         })

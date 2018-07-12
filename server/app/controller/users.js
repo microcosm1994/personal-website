@@ -1,23 +1,25 @@
 'use strict'
 const svgCaptcha = require('svg-captcha');
 const sendEmail = require('./sendEmail')
+const Crypto = require('crypto')
+const Invite = 'microcosm'
 let captchaCode = ''
 let emailCode = ''
 
 // 验证邮箱唯一
-module.exports.validate =function* (ctx){
+module.exports.validate = function* (ctx) {
     let data = {
         username: ctx.query.username
     }
     let result = yield ctx.model.User.find(data);
-    if(result.length > 0) {
+    if (result.length > 0) {
         ctx.body = {
             status: 1,
             message: '邮箱不可被注册'
         }
-    }else {
+    } else {
         ctx.body = {
-            status:0,
+            status: 0,
             message: '邮箱可被注册'
         }
     }
@@ -64,7 +66,7 @@ module.exports.getemail = (ctx) => {
     }
     let email = {
         title: 'Blog个人网站--邮箱验证码',
-        htmlBody: '<h1>Hello!</h1><p style="font-size: 18px;color:#000;">验证码为：<u style="font-size: 16px;color:#1890ff;">'+ emailCode +'</u></p><p style="font-size: 14px;color:#666;">10分钟内有效</p>>'
+        htmlBody: '<h1>Hello!</h1><p style="font-size: 18px;color:#000;">验证码为：<u style="font-size: 16px;color:#1890ff;">' + emailCode + '</u></p><p style="font-size: 14px;color:#666;">10分钟内有效</p>>'
     }
     let mailOptions = {
         from: 'www.dubo1994.com<microcosm@dubo1994.com>', // sender address mailfrom must be same with the user
@@ -86,7 +88,7 @@ module.exports.verify_email = (ctx) => {
             status: 0,
             message: '邮箱验证成功'
         }
-    }else{
+    } else {
         ctx.body = {
             status: 1,
             message: '邮箱验证码错误'
@@ -94,25 +96,47 @@ module.exports.verify_email = (ctx) => {
     }
 }
 // 注册账号
-module.exports.register = (ctx) => {
-    let body = ctx.request.body
-    let result = ctx.model.User.create(body);
-    ctx.body = {
-        status: 0,
-        message: '注册成功',
-        data: result
+module.exports.register = function* (ctx){
+    let form = ctx.request.body
+    let hexInvite = md5(Invite)
+    // 对密码进行二次加密
+    form.password = sha256(form.password, form.username)
+    if (hexInvite === form.invite) {
+        let result = yield ctx.model.User.create(form);
+        ctx.body = {
+            status: 0,
+            message: '注册成功',
+            data: result
+        }
+    }else{
+        ctx.body = {
+            status: 1,
+            message: '邀请码错误'
+        }
     }
 };
 
-exports.show = async () => {
-};
+function timestampToTime (timestamp) {
+    let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    let Y = date.getFullYear() + '-'
+    let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+    let D = date.getDate() + ' '
+    let h = date.getHours() + ':'
+    let m = date.getMinutes() + ':'
+    let s = date.getSeconds()
+    return Y + M + D + h + m + s;
+}
 
-exports.edit = async () => {
-};
+function md5 (str) {
+    const hash = Crypto.createHash('md5');
+    hash.update(str)
+    return hash.digest('hex')
+}
 
-exports.update = async () => {
-};
+function sha256 (str, username) {
+    const hmac = Crypto.createHmac('sha256', username);
+    hmac.update(str)
+    return hmac.digest('hex')
+}
 
-exports.destroy = async () => {
-};
 // module.exports = BlogController
