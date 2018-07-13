@@ -286,8 +286,7 @@ class Start extends Component {
         return (
             <div className="Start">
                <div className='Start-container'>
-                   <header className="Start-header">
-                   </header>
+                   <header className="Start-header"></header>
                    <div className="cmd-box">
                        <textarea type='input' className='cmd' ref='mycmd' autoFocus='autoFocus' readOnly='readOnly' value={this.state.cmd}></textarea>
                    </div>
