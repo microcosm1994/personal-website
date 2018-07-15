@@ -24,7 +24,7 @@ module.exports.validate = function* (ctx) {
         }
     }
 }
-// 图片验证码
+// 获取图片验证码
 module.exports.getcode = (ctx) => {
     const options = {
         width: 100,
@@ -34,7 +34,15 @@ module.exports.getcode = (ctx) => {
         noise: 2,
     }
     const Captcha = svgCaptcha.createMathExpr(options);
-    captchaCode = Captcha.text
+    let {type, stamp} = ctx.query
+    // 登陆验证码
+    if (type === 1){
+        let key = md5(stamp)
+    }else{
+        // 注册验证码
+
+    }
+    ctx.session.captchaCode = Captcha.text
     ctx.body = {
         status: 0,
         message: 'success',

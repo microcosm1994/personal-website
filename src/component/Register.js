@@ -154,7 +154,7 @@ class Register extends Component {
     // 获取图片验证码
     getcode = () => {
         let t = new Date()
-        axios.get('/api/users/getcode?t=' + t.getTime()).then((response) => {
+        axios.get('/api/users/getcode?type=2&t=' + t.getTime()).then((response) => {
             if (response.data.status === 0) {
                 this.setState({code_svg: response.data.data})
             }
@@ -228,6 +228,8 @@ class Register extends Component {
                 axios.post('/api/users/register', form).then((response) => {
                     if (response.data.status === 0) {
                         message.success(response.data.message)
+                        history.push('/login', { some: 'state' })
+                        window.location  = window.location
                     }
                 })
             } else {
