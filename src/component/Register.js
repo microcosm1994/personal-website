@@ -116,7 +116,7 @@ class Register extends Component {
             return false
         }
         // 验证图片验证码是否正确
-        axios.get('/api//users/verify_code?code=' + this.state.form.verify_img).then((response) => {
+        axios.get('/api//users/verify_code?type=2&code=' + this.state.form.verify_img).then((response) => {
             if (response.data.status === 0) {
                 // 验证邮箱是否可被注册
                 axios.get('/api/users/validate?username=' + this.state.form.username).then((response) => {
@@ -163,7 +163,7 @@ class Register extends Component {
     // 获取邮箱验证码
     getemail = () => {
         let self = this
-        axios.get('/api/users/getemail?username=' + this.state.form.username).then((response) => {
+        axios.get('/api/users/getemail?type=1&username=' + this.state.form.username).then((response) => {
             if (response.data.status === 0) {
                 let s = 60
                 this.setState({
@@ -206,7 +206,7 @@ class Register extends Component {
             return false
         }
         // 验证邮箱验证码是否正确，如果正确保存注册信息到数据库
-        axios.get('/api/users/verify_email?code=' + code).then((response) => {
+        axios.get('/api/users/verify_email?type=1&code=' + code).then((response) => {
             if (response.data.status === 0) {
                 // 发送邮件成功之后清楚定时器，初始化邮箱验证码倒计时
                 clearInterval(this.timerID)

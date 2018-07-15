@@ -8,6 +8,7 @@
     "egg-cors": "^2.0.0",
     "egg-mongoose": "^3.1.0",
     "egg-scripts": "^2.5.0",
+    "jsonwebtoken": "^8.3.0",
     "nodemailer": "^4.6.7"
   },
   "devDependencies": {

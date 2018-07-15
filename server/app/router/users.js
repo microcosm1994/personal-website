@@ -7,4 +7,5 @@ module.exports = app => {
     router.get('/users/verify_code', controller.users.verify_code);
     router.get('/users/verify_email', controller.users.verify_email);
     router.post('/users/register', controller.users.register);
+    router.post('/users/login', controller.users.login);
 };

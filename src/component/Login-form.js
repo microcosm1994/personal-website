@@ -69,10 +69,14 @@ class Login_form extends Component {
             }
         }
         //验证验证码是否正确
-        axios.get('/api//users/verify_code?code=' + this.state.form.verify_img).then((response) => {
+        axios.get('/api//users/verify_code?type=1&code=' + data.verify_img).then((response) => {
             if (response.data.status === 0){
                 //登录
-                
+                axios.post('/api/user/login', data).then((response) => {
+                    if(response.data.status === 0) {
+                        console.log(response.data);
+                    }
+                })
             }else{
                 message.error('验证码错误，请重试。')
                 this.getcode()

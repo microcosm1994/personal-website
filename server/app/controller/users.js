@@ -3,8 +3,6 @@ const svgCaptcha = require('svg-captcha');
 const sendEmail = require('./sendEmail')
 const Crypto = require('crypto')
 const Invite = 'microcosm'
-let captchaCode = ''
-let emailCode = ''
 
 // 验证邮箱唯一
 module.exports.validate = function* (ctx) {
@@ -34,15 +32,16 @@ module.exports.getcode = (ctx) => {
         noise: 2,
     }
     const Captcha = svgCaptcha.createMathExpr(options);
-    let {type, stamp} = ctx.query
+    const {type, t} = ctx.query
     // 登陆验证码
-    if (type === 1){
-        let key = md5(stamp)
-    }else{
+    if (type === '1') {
+        ctx.session.login_code = Captcha.text
+    } else {
         // 注册验证码
-
+        ctx.session.register_code = Captcha.text
     }
-    ctx.session.captchaCode = Captcha.text
+    // 设置session过期时间
+    ctx.session.maxAge = 1000 * 60 * 10
     ctx.body = {
         status: 0,
         message: 'success',
@@ -51,27 +50,35 @@ module.exports.getcode = (ctx) => {
 };
 //图片验证码验证
 module.exports.verify_code = (ctx) => {
-    let code = ctx.query.code
-    if (captchaCode === code) {
-        ctx.body = {
-            status: 0,
-            message: 'success'
-        }
+    const {type, code} = ctx.query
+    const {login_code, register_code} = ctx.session
+    let result_success = {status: 0, message: 'success'}
+    let result_error = {status: 1, message: '验证码错误'}
+    // 登陆验证码验证
+    if (type === '1') {
+        ctx.body = code === login_code ? result_success : result_error
     } else {
-        ctx.body = {
-            status: 1,
-            message: '验证码错误'
-        }
+        // 注册验证码验证
+        ctx.body = code === register_code ? result_success : result_error
     }
-};
+}
 // 获取邮箱验证
 module.exports.getemail = (ctx) => {
-    let username = ctx.query.username
+    const {type, username} = ctx.query
     // 生成6位数验证码
-    emailCode = ''
+    let emailCode = ''
     for (let i = 0; i < 6; i++) {
         emailCode += Math.floor(Math.random() * 10).toString()
     }
+    // 注册邮箱验证码
+    if (type === '1') {
+        ctx.session.register_email = emailCode
+    } else {
+        // 找回密码验证码
+        ctx.session.find_email = emailCode
+    }
+    // 设置session过期时间
+    ctx.session.maxAge = 1000 * 60 * 10
     let email = {
         title: 'Blog个人网站--邮箱验证码',
         htmlBody: '<h1>Hello!</h1><p style="font-size: 18px;color:#000;">验证码为：<u style="font-size: 16px;color:#1890ff;">' + emailCode + '</u></p><p style="font-size: 14px;color:#666;">10分钟内有效</p>>'
@@ -90,17 +97,16 @@ module.exports.getemail = (ctx) => {
 }
 // 邮箱验证码验证
 module.exports.verify_email = (ctx) => {
-    let code = ctx.query.code
-    if (code === emailCode) {
-        ctx.body = {
-            status: 0,
-            message: '邮箱验证成功'
-        }
+    const {type, code} = ctx.query
+    const {register_email, find_email} = ctx.session
+    let result_success = {status: 0, message: 'success'}
+    let result_error = {status: 1, message: '验证码错误'}
+    // 注册邮箱验证码验证
+    if (type === '1') {
+        ctx.body = code === register_email ? result_success : result_error
     } else {
-        ctx.body = {
-            status: 1,
-            message: '邮箱验证码错误'
-        }
+        // 找回密码邮箱验证码验证
+        ctx.body = code === find_email ? result_success : result_error
     }
 }
 // 注册账号
@@ -119,14 +125,6 @@ module.exports.register = function* (ctx) {
             isAdmin: result.isAdmin,
             _id: result._id
         }
-        let sgin = 'account?username='+ data.username + '&_id=' + data._id
-        // cookie过期时间
-        let deadline = 1000 * 60 * 60 * 24 * 30 * 3
-        ctx.cookies.set('sgin', sgin, {
-            maxAge: deadline,
-            httpOnly: true, // 默认就是 true
-            encrypt: true, // 加密传输
-        });
         ctx.body = {
             status: 0,
             message: '注册成功',
@@ -139,6 +137,18 @@ module.exports.register = function* (ctx) {
         }
     }
 };
+
+// 登录账号
+module.exports.login = function* (ctx) {
+    const form = ctx.request.body
+    let password = sha256(form.password, form.username)
+    let user = yield ctx.model.User.find({username: form.username})
+    console.log(user);
+    ctx.body = {
+        status: 0,
+        message: 'success'
+    }
+}
 
 function timestampToTime(timestamp) {
     let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
