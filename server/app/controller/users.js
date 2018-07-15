@@ -2,6 +2,9 @@
 const svgCaptcha = require('svg-captcha');
 const sendEmail = require('./sendEmail')
 const Crypto = require('crypto')
+const jwt = require('jsonwebtoken');
+const fs = require('fs')
+const path = require('path')
 const Invite = 'microcosm'
 
 // 验证邮箱唯一
@@ -141,12 +144,48 @@ module.exports.register = function* (ctx) {
 // 登录账号
 module.exports.login = function* (ctx) {
     const form = ctx.request.body
+    let rember = form.checked
+    let time = 3600
     let password = sha256(form.password, form.username)
-    let user = yield ctx.model.User.find({username: form.username})
-    console.log(user);
-    ctx.body = {
-        status: 0,
-        message: 'success'
+    let users = yield ctx.model.User.find({username: form.username})
+    let {
+        username,
+        portrait,
+        _id
+    } = users[0]
+    if (users.length > 0){
+        if (password === users[0].password) {
+            if (rember) {
+                time = time * 24 * 30
+                ctx.cookies.set('token', generateToken({_id: users[0]._id}, time),{
+                    maxAge: time,
+                    path: '/',
+                    domain: 'localhost',
+                    httpOnly: false,
+                });
+            } else{
+                ctx.cookies.set('token', generateToken({_id: users[0]._id}, time));
+            }
+            ctx.body = {
+                status: 0,
+                message: '登录成功',
+                data: {
+                    username: username,
+                    portrait: portrait,
+                    _id: _id
+                }
+            }
+        }else{
+            ctx.body = {
+                status: 1,
+                message: '账号或密码输入错误'
+            }
+        }
+    }else{
+        ctx.body = {
+            status: 1,
+            message: '账号没有注册'
+        }
     }
 }
 
@@ -160,7 +199,7 @@ function timestampToTime(timestamp) {
     let s = date.getSeconds()
     return Y + M + D + h + m + s;
 }
-
+// 加密方式
 function md5(str) {
     const hash = Crypto.createHash('md5');
     hash.update(str)
@@ -172,5 +211,14 @@ function sha256(str, username) {
     hmac.update(str)
     return hmac.digest('hex')
 }
-
+// token
+function  generateToken(data, time){
+    let created = Math.floor(Date.now() / 1000);
+    let cert = fs.readFileSync(path.join(__dirname, '../public/rsa_private_key.pem'));//私钥
+    let token = jwt.sign({
+        data,
+        exp: created + time
+    }, cert, {algorithm: 'RS256'});
+    return token;
+}
 // module.exports = BlogController

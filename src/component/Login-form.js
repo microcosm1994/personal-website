@@ -3,6 +3,8 @@ import {Router, Switch, Link, Route} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import {Button, message, Tooltip} from 'antd'
 import axios from 'axios'
+import md5 from 'md5'
+import Cookies from 'js-cookie'
 import '../css/Login-form.css'
 import Logo from '../img/logo20180627-04.png'
 import 'antd/lib/button/style/css'
@@ -17,7 +19,7 @@ class Login_form extends Component {
         this.state = {
             bgStyle: {},
             checked: false,
-            form: {
+            data: {
                 username: '',
                 password: '',
                 verify_img: ''
@@ -29,10 +31,12 @@ class Login_form extends Component {
     componentDidMount() {
         this.getcode()
     }
+
     // 双向数据绑定
     handleChange = (key, event) => {
-        let form = this.state.form
-        for (let item in this.state.form) {
+        let form = this.state.data
+        console.log(this.state.data);
+        for (let item in this.state.data) {
             if (item === key) {
                 form[item] = event.target.value
                 this.setState({form: form})
@@ -55,14 +59,19 @@ class Login_form extends Component {
     }
 
     login = () => {
-        console.log(this.state.form);
-        let data = this.state.form
+        console.log(this.state.data);
+        let data = {
+            username: this.state.data.username,
+            password: this.state.data.password,
+            verify_img: this.state.data.verify_img,
+            checked: this.state.checked// 是否保持登录
+        }
         let arr = {
             username: '账号',
             password: '密码',
             verify_img: '图片验证码'
         }
-        for (let key in data){
+        for (let key in data) {
             if (data[key] === '') {
                 message.error(arr[key] + '不能为空')
                 return false
@@ -70,14 +79,24 @@ class Login_form extends Component {
         }
         //验证验证码是否正确
         axios.get('/api//users/verify_code?type=1&code=' + data.verify_img).then((response) => {
-            if (response.data.status === 0){
+            if (response.data.status === 0) {
                 //登录
-                axios.post('/api/user/login', data).then((response) => {
-                    if(response.data.status === 0) {
-                        console.log(response.data);
+                data.password = md5(data.password)// 加密密码
+                axios.post('/api/users/login', data).then((response) => {
+                    if (response.data.status === 0) {
+                        let deadline = data.checked ? 30 : 1
+                        for (let key in response.data.data) {
+                            Cookies.set(key, response.data.data[key], {
+                                path: '/',
+                                expires: deadline,
+                                domain: 'localhost'
+                            })
+                        }
+                        history.push('/admin', { some: 'state' })
+                        window.location  = window.location
                     }
                 })
-            }else{
+            } else {
                 message.error('验证码错误，请重试。')
                 this.getcode()
             }
@@ -85,7 +104,7 @@ class Login_form extends Component {
     }
 
     render() {
-        const {checked, form, code_svg} = this.state
+        const {checked, data, code_svg} = this.state
         return (
             <div>
                 <div className='Login-logo'>
@@ -96,13 +115,16 @@ class Login_form extends Component {
                 </div>
                 <div className='Login-form'>
                     <div className='form-input'>
-                        <input type="text" value={form.username} placeholder='请输入账号' onChange={this.handleChange.bind(this, 'username')}/>
+                        <input type="text" value={data.username} placeholder='请输入账号'
+                               onChange={this.handleChange.bind(this, 'username')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="password" value={form.password} placeholder='请输入密码' onChange={this.handleChange.bind(this, 'password')}/>
+                        <input type="password" value={data.password} placeholder='请输入密码'
+                               onChange={this.handleChange.bind(this, 'password')}/>
                     </div>
                     <div className='form-input'>
-                        <input type="text" value={form.verify_img} placeholder='请输验证码' onChange={this.handleChange.bind(this, 'verify_img')}/>
+                        <input type="text" value={data.verify_img} placeholder='请输验证码'
+                               onChange={this.handleChange.bind(this, 'verify_img')}/>
 
                         <Tooltip placement="top" title='点击更换新的验证码'>
                             <span onClick={this.getcode} dangerouslySetInnerHTML={{__html: code_svg}}></span>
@@ -111,7 +133,7 @@ class Login_form extends Component {
                     <div className='form-remember'>
                         <div className="form-remember-radio" onClick={this.remberLogin}>
                             <input type="checkbox" checked={checked} name='remember'/>
-                            <span>保持登录</span>
+                            <span>30天内免登录</span>
                         </div>
                     </div>
                     <div className="from-btn" onClick={this.login}>
