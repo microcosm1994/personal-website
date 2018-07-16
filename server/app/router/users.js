@@ -1,7 +1,8 @@
 'use strict'
 module.exports = app => {
     const { router, controller } = app;
-    router.get('/users/getcode', controller.users.getcode);
+    const UserInterceptor = app.middleware.userInterceptor({}, app);
+    router.get('/users/getcode', UserInterceptor, controller.users.getcode);
     router.get('/users/getemail', controller.users.getemail);
     router.get('/users/validate', controller.users.validate);
     router.get('/users/verify_code', controller.users.verify_code);

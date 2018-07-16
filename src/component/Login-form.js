@@ -35,7 +35,6 @@ class Login_form extends Component {
     // 双向数据绑定
     handleChange = (key, event) => {
         let form = this.state.data
-        console.log(this.state.data);
         for (let item in this.state.data) {
             if (item === key) {
                 form[item] = event.target.value

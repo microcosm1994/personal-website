@@ -2,12 +2,8 @@
 
 module.exports = appInfo => {
     const config = exports = {};
-
     // use for cookie sign key, should change to your own and keep security
     config.keys = appInfo.name + '_1530091135719_4647';
-
-    // add your config here
-    config.middleware = [];
     config.security = {
         csrf: {
             enable: false,
@@ -24,6 +20,15 @@ module.exports = appInfo => {
             options: {},
         },
     };
+    //cookie密钥
     config.keys = 'microcosm,microcosm1994'
+    config.redis = {
+        client: {
+            port: 6379,          // Redis port
+            host: '127.0.0.1',   // Redis host
+            password: 'auth',
+            db: 0,
+        },
+    }
     return config;
 };

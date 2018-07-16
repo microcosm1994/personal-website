@@ -3,6 +3,7 @@ const svgCaptcha = require('svg-captcha');
 const sendEmail = require('./sendEmail')
 const Crypto = require('crypto')
 const jwt = require('jsonwebtoken');
+const ms = require('ms')
 const fs = require('fs')
 const path = require('path')
 const Invite = 'microcosm'
@@ -143,28 +144,29 @@ module.exports.register = function* (ctx) {
 
 // 登录账号
 module.exports.login = function* (ctx) {
+    const {app} = this
     const form = ctx.request.body
     let rember = form.checked
-    let time = 3600
+    let time = 3600 * 24 * 30
     let password = sha256(form.password, form.username)
     let users = yield ctx.model.User.find({username: form.username})
-    let {
-        username,
-        portrait,
-        _id
-    } = users[0]
+    let {username, portrait, _id} = users[0]
     if (users.length > 0){
         if (password === users[0].password) {
             if (rember) {
-                time = time * 24 * 30
-                ctx.cookies.set('token', generateToken({_id: users[0]._id}, time),{
-                    maxAge: time,
+                let token = generateToken({_id: _id}, time)
+                ctx.cookies.set('token', token,{
+                    maxAge: time * 1000,
                     path: '/',
                     domain: 'localhost',
                     httpOnly: false,
                 });
+                app.redis.set(username, token)
             } else{
-                ctx.cookies.set('token', generateToken({_id: users[0]._id}, time));
+                time = 3600
+                let token = generateToken({_id: _id}, time)
+                ctx.cookies.set('token', token);
+                app.redis.set(username, token)
             }
             ctx.body = {
                 status: 0,
