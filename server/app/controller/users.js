@@ -213,7 +213,12 @@ function sha256(str, username) {
     hmac.update(str)
     return hmac.digest('hex')
 }
-// token
+/**
+*@filename:token
+*@Description:
+ * data:用户id
+ * time:保存时间
+*/
 function  generateToken(data, time){
     let created = Math.floor(Date.now() / 1000);
     let cert = fs.readFileSync(path.join(__dirname, '../public/rsa_private_key.pem'));//私钥
